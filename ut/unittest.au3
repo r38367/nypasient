@@ -61,6 +61,48 @@ Func UTAssertEqual(Const $a, Const $b, Const $msg = "Assert Failure", Const $erl
 
 EndFunc
 
+Func UTAssertFileEqual( Const $file1, Const $file2, Const $ignorewhitespace = true, Const $erl = @ScriptLineNumber )
+	Local $str1, $str2
+	$iTotalAssertions += 1
+
+	$str1 = FileRead( $file1 )
+	if @error = 1 then
+		DoTestFail( "Can't open " & $file1, $erl )
+		return
+	Else
+		DoTestPass()
+	EndIf
+
+	; strip parts that can be changing
+	; strip GUID
+	$str1 = StringRegExpReplace( $str1, "(?i)(?s)(<ident>\s*<id>)([^/]*?)(</id>[^/]*?XXX.*?</ident>)", "$1$3" )
+
+	if $ignorewhitespace then $str1 = StringStripWS( $str1, 8 )
+
+	$iTotalAssertions += 1
+	$str2 = FileRead( $file2 )
+	if @error = 1 then
+		DoTestFail( "Can't open " & $file2, $erl  )
+		return
+	Else
+		DoTestPass()
+	EndIf
+
+	if $ignorewhitespace then $str2= StringStripWS( $str2, 8 )
+
+
+
+	return UTAssertEqual( $str1, $str2, "Files differ", $erl )
+;~ 	if $str1 == $str2 then
+;~ 		DoTestPass()
+;~ 	Else
+;~ 		DoTestFail( StringFormat( "Files differ: file1=[%s], file2=[%s]", $file1, $file2 ), $erl)
+;~ 	EndIf
+
+;~ 	return 3
+
+EndFunc
+
 Func DoTestPass()
 	$iTotalPass += 1
 	;ConsoleWrite( "." )
