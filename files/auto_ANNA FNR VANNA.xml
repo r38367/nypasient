@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Name>Anna</Name>
+<Surname>Fnr Vanna</Surname>
+<Birthdate>2003-02-01</birthdate>
+<Kjonn DN="Mann" V="1"/>
+<Ident>
+	<ID>01020399999</ID>
+	<TypeId V="FNR" S="2.16.578.1.12.4.1.1.8116" DN="Fødselsnummer"/>
+</Ident>
+<Ident>
+	<ID></ID>
+	<TypeId V="XXX" S="2.16.578.1.12.4.1.1.8116" DN="GUID"/>
+</Ident>

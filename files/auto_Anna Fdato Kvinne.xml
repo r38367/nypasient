@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Name>Anna</Name>
+<Surname>Fdato Kvinne</Surname>
+<Birthdate>2018-01-12</birthdate>
+<Kjonn DN="Kvinne" V="2"/>
+<Ident>
+	<ID></ID>
+	<TypeId V="XXX" S="2.16.578.1.12.4.1.1.8116" DN="GUID"/>
+</Ident>
