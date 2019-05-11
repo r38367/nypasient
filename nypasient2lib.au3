@@ -70,14 +70,14 @@ Func GetElements( $input, byref $fnr, byref $fdato, byref $sexid )
 	; if short fdato - ddmmyy(s)
 	elseif StringRegExp( $input, "^(0[1-9]|[12][0-9]|3[01])(0[1-9]|1[012])[0-9][0-9][kKmM]?$") then
 			$sexid = GetSexId(  StringRight($input,1) )
-			$fnr = StringLeft( $input, 6)
+			$fnr = 0 ;StringLeft( $input, 6)
 			$fdato = GetFdato( $input )
 			return 0
 
 	; if long fdato - ddmmyyyy(s)
 	elseif StringRegExp( $input, "^(0[1-9]|[12][0-9]|3[01])(0[1-9]|1[012])\d{4}[kKmM]?$") then
 			$sexid = GetSexId(  StringRight($input,1) )
-			$fnr = StringRegExpReplace( $input, "(\d\d\d\d)\d\d(\d\d).?", "$1$2")
+			$fnr = 0 ;StringRegExpReplace( $input, "(\d\d\d\d)\d\d(\d\d).?", "$1$2")
 			$fdato = GetFdato( $input )
 			return 0
 
@@ -233,6 +233,7 @@ Func GetGUID()
 
 	$id = $oScriptlet.Guid
 	$id = StringMid($id, 2, StringLen($id) - 2)
+
 	Return $id
 EndFunc   ;==> GetGUID
 
@@ -331,9 +332,9 @@ func FlagError( $err, $text = "", $flag = 0 )
 		case $ERR_FORMAT
 			$text = "name surname fnr"
 		case $ERR_FNR
-			$text = "ugyldig fødslesnummer"
+			$text = "ugyldig fødselsnummer"
 		case $ERR_FDATO
-			$text = "ugyldig fødslesdato"
+			$text = "ugyldig fødselsdato"
 		case $ERR_OPEN_FILE
 			$text = "Can't open file " & $text
 		case $ERR_READ_FILE
