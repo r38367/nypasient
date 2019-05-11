@@ -66,7 +66,7 @@ Test( "Error 3: fail age/fdato" )
 		UTAssertTrue( SendInput("a b 30027799999") )
 		Sleep(100)
 		UTAssertTrue( GetErrorBox("Error 3") )
-		Sleep(1000)
+		Sleep(100)
 
 	CloseApp()
 
@@ -90,79 +90,27 @@ Test( "Error 5: no auto_.xml" )
 
 
 Test( "create FNR")
-	StartApp()
-	Sleep(100)
-	;Local $filetemplate = @WorkingDir & "\auto_.xml"
-	;Local $fileoutput = StringReplace( $filetemplate, "_.xml", "A B.xml" )
-	Local $tmp_name = StringLeft(GetGUID(),10) & " fnr"
-		UTAssertTrue( SendInput(  $tmp_name & " 01020399999") )
-		Sleep(100)
-		UTAssertTrue( GetErrorBox("Pasient successfully") )
-		Sleep(100)
-
-	FileDelete( @WorkingDir & "\auto_" & $tmp_name & ".xml" )
-
-	CloseApp()
-
+	VerifyInput( "Anna Fnr Vanna", "01020399999" )
 
 Test( "create DNR")
-	StartApp()
-	Sleep(100)
-	;Local $filetemplate = @WorkingDir & "\auto_.xml"
-	;Local $fileoutput = StringReplace( $filetemplate, "_.xml", "A B.xml" )
-	Local $tmp_name = StringLeft(GetGUID(),10) & " dnr"
-		UTAssertTrue( SendInput(  $tmp_name & " 61020399999") )
-		Sleep(100)
-		UTAssertTrue( GetErrorBox("Pasient successfully") )
-		Sleep(100)
+	VerifyInput( "Anna Dnr Vanna", "51020399999" )
 
-	FileDelete( @WorkingDir & "\auto_" & $tmp_name & ".xml" )
+Test( "create FDATO 2000")
+	VerifyInput( "Anna Fdato 2000", "12012008" )
 
-	CloseApp()
-
-Test( "create FDATO")
-StartApp()
-	Sleep(100)
-	Local $tmp_name = StringLeft(GetGUID(),10) & " fdato"
-		UTAssertTrue( SendInput(  $tmp_name & " 12011876") )
-		Sleep(100)
-		UTAssertTrue( GetErrorBox("Pasient successfully") )
-		Sleep(100)
-
-	FileDelete( @WorkingDir & "\auto_" & $tmp_name & ".xml" )
-
-	CloseApp()
+Test( "create FDATO 1900")
+	VerifyInput( "Anna Fdato 1900", "12011908" )
 
 Test( "create FDATO MAN")
-StartApp()
-	Sleep(100)
-	Local $tmp_name = StringLeft(GetGUID(),10) & " man"
-		UTAssertTrue( SendInput(  $tmp_name & " 12012008m") )
-		Sleep(100)
-		UTAssertTrue( GetErrorBox("Pasient successfully") )
-		Sleep(100)
-
-	FileDelete( @WorkingDir & "\auto_" & $tmp_name & ".xml" )
-
-	CloseApp()
+	VerifyInput( "Anna Fdato Mann", "12011945m" )
 
 Test( "create FDATO KVINNE")
-StartApp()
-	Sleep(100)
-	Local $tmp_name = StringLeft(GetGUID(),10) & " kvinne"
-		UTAssertTrue( SendInput(  $tmp_name & " 12012008K") )
-		Sleep(100)
-		UTAssertTrue( GetErrorBox("Pasient successfully") )
-		Sleep(100)
-
-	FileDelete( @WorkingDir & "\auto_" & $tmp_name & ".xml" )
-
-	CloseApp()
+	VerifyInput( "Anna Fdato Kvinne", "12012018K" )
 
 Test( "create UPPERCASE")
 StartApp()
 	Sleep(100)
-	Local $tmp_name = StringLeft(GetGUID(),10) & " upper"
+	Local $tmp_name = "THIS UPPER"
 		UTAssertTrue( SendInput(  $tmp_name & " 12012008K") )
 		Sleep(100)
 		UTAssertTrue( GetErrorBox("Pasient successfully") )
@@ -176,7 +124,7 @@ Test( "create PROPER")
 
 StartApp()
 	Sleep(100)
-	Local $tmp_name = StringLeft(GetGUID(),10) & " proper"
+	Local $tmp_name = "THIS PROPER"
 		UTAssertTrue( SendInput(  $tmp_name & " 12012008K") )
 		Sleep(100)
 		UTAssertTrue( GetErrorBox("Pasient successfully") )
@@ -226,11 +174,25 @@ Test( "Error 8: overwrite - yes" )
 
 
 Test( "File name in Upper case " )
-	;StartApp()
-	;CloseApp()
-	;UTAssertTrue( false )
 
 Test( "File name in proper case " )
 	;StartApp()
 	;CloseApp()
 	;UTAssertTrue( false )
+
+Func VerifyInput( const $name, const $fnr )
+
+	Local $file = "\auto_" & $name & ".xml"
+
+	StartApp()
+	Sleep(100)
+
+	UTAssertTrue( SendInput(  $name & " " & $fnr ) )
+	Sleep(100)
+	UTAssertTrue( GetErrorBox("Pasient successfully") )
+	Sleep(100)
+	UTAssertFileEqual( @WorkingDir & $file, @WorkingDir & "\..\files" & $file )
+	FileDelete( @WorkingDir & $file )
+	CloseApp()
+EndFunc
+

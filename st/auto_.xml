@@ -2,9 +2,12 @@
 <Name>#name#</Name>
 <Surname>#surname#</Surname>
 <Birthdate>#birthdate#</birthdate>
-<id>#id#</id>
 <Kjonn DN="#sex#" V="#sexid#"/>
 <Ident>
 	<ID>#fnr#</ID>
 	<TypeId V="FNR" S="2.16.578.1.12.4.1.1.8116" DN="Fødselsnummer"/>
+</Ident>
+<Ident>
+	<ID>#id#</ID>
+	<TypeId V="XXX" S="2.16.578.1.12.4.1.1.8116" DN="GUID"/>
 </Ident>
