@@ -22,9 +22,12 @@
 ; 	- added unit testing
 ;	- added support for ddmmyyyy(s)
 ; 	- added automatic centure for ddmmyy (if fnr.year < now.year -> 1900, otherwise 2000
-;TODO:
-; - change GetAge, GetCentury, ...
-;
+; 12/05/19
+;	- fixed error "no auto_.xml"
+; 	- fixed error in error text "fødselsnummer", "fødselsdato"
+;	- fiexed proper in names with numbers
+;	- remove FNR element for files with fdato
+;	- added unit and system testing
 ; ================================
 
 ;OnAutoItExitRegister("MyExitFunc")
@@ -179,7 +182,6 @@ Func ProcessInput()
 
 	; get all other elements from fnr
 	$err = GetElements( $fnr, $fnr, $fdato, $sexid)
-	FlagError( 0, $fdato )
 	if $err > 0 then
 		FlagError( $err )
 		return
@@ -227,11 +229,10 @@ Func CreatePasientFile( $name,$surname, $fnr, $fdato, $sexid )
 
 	; Read file
 	$filetemplate = @WorkingDir & "\auto_.xml"
-	ConsoleWrite( @CRLF & $filetemplate & @CRLF )
 
 	$sString = FileRead($filetemplate)
 	If @error = 1 Then
-		FlagError($ERR_OPEN_FILE, $filetemplate )
+		FlagError($ERR_OPEN_FILE, $filetemplate & @CRLF & "with #name#, #surname#, #birthdate#, #sex#, #sexid#, #fnr#, #id#" )
 		Exit
 	EndIf
 
@@ -243,15 +244,16 @@ Func CreatePasientFile( $name,$surname, $fnr, $fdato, $sexid )
 	$sString = StringReplace($sString, "#sex#", $sex)
 	$sString = StringReplace($sString, "#sexid#", $sexid)
 
-	; change type
-	if isDnr($fnr)  Then
-		$sString = StringReplace($sString, '="FNR"', '="DNR"')
-		$sString = StringReplace($sString, '="F'& ChrW(248) &'dselsnummer"', '="D-nummer"')
+	if $fnr = 0 then
+		; strip FNR
+		$sString = StringRegExpReplace( $sString, "(?s)(?i)([\n\r]+<ident>\s*<id>[^/]*?</id>[^/]*?FNR.*?</ident>)", "" )
+	else
+		; change type
+		if isDnr($fnr)  Then
+			$sString = StringReplace($sString, '="FNR"', '="DNR"')
+			$sString = StringReplace($sString, '="F'& ChrW(248) &'dselsnummer"', '="D-nummer"')
 
-	Else
-		$sString = StringReplace($sString, '="DNR"', '="FNR"')
-		$sString = StringReplace($sString, '="D-nummer"', '="F'& ChrW(248) &'dselsnummer"')
-
+		EndIf
 	EndIf
 
 	; Write file
@@ -275,7 +277,7 @@ Func CreatePasientFile( $name,$surname, $fnr, $fdato, $sexid )
 		Return
 	EndIf
 
-	Local $sString
+	;Local $sString
 	If FileWrite($file, $sString) = 0 Then
 		FlagError( $ERR_WRITE_FILE, $fileoutput )
 		Return
@@ -285,7 +287,7 @@ Func CreatePasientFile( $name,$surname, $fnr, $fdato, $sexid )
 
 	$sString = ""
 	$sString &= "Name : " & $name & " " & $surname & @CRLF
-	$sString &= "Fnr  : " & $fnr & @CRLF
+	if $fnr <> 0 then $sString &= "Fnr  : " & $fnr & @CRLF
 	$sString &= "Fdato: " & $fdato & "  (" & $sex & "-" & $age & ")" & @CRLF
 	$sString &= "File : " & $fileoutput & @CRLF
 
