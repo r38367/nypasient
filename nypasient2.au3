@@ -246,7 +246,8 @@ Func CreatePasientFile( $name,$surname, $fnr, $fdato, $sexid )
 
 	if $fnr = 0 then
 		; strip FNR
-		$sString = StringRegExpReplace( $sString, "(?s)(?i)([\n\r]+<ident>\s*<id>[^/]*?</id>[^/]*?FNR.*?</ident>)", "" )
+		$sString = StringRegExpReplace( $sString, "(?s)(?i)(\s+<ident>\s*<id>[^/]*?</id>[^/]*?FNR.*?</ident>)", "" )
+		$sString = StringRegExpReplace( $sString, "(?s)(?i)(\s*<id>\s*<[^>]*id>[^/]*?</[^/]*?fnr.*?</id>)", "" )
 	else
 		; change type
 		if isDnr($fnr)  Then
