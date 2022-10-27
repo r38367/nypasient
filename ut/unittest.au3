@@ -2,8 +2,9 @@
 
 #include <Array.au3>
 
-OnAutoItExitRegister("FlushTestResults")
-
+if not @Compiled then
+	OnAutoItExitRegister("FlushTestResults")
+endif
 
 #cs ----------------------------------------------------------------------------
 
@@ -102,6 +103,17 @@ Func UTAssertFileEqual( Const $file1, Const $file2, Const $ignorewhitespace = tr
 ;~ 	return 3
 
 EndFunc
+
+Func 	UTFileRead( Const $file )
+	Local $f ;, $aPaths = [ "", ".\files\", "..\files\" ]
+	$f = StringRegExpReplace( @WorkingDir, "(.*\\test\\).*", "$1files\\" & $file )
+ConsoleWrite( @WorkingDir& @CRLF & $f & @CRLF )
+
+	if FileExists( $f ) then Return FileRead( $f )
+
+	Return 0 ; "File not found"
+
+EndFunc ;-> UTReadFile
 
 Func DoTestPass()
 	$iTotalPass += 1

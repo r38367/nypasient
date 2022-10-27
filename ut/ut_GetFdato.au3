@@ -31,6 +31,11 @@ UTAssertEqual( GetFdato( "71019949849" ) ,  "1999-01-31" )
 UTAssertEqual( GetFdato( "41019900041" ) ,  "1999-01-01" )
 UTAssertEqual( GetFdato( "89230566110" ) ,  "2005-23-89" )
 
+; nye D-serier
+UTAssertEqual( GetFdato( "50084190065" ) ,  "1941-08-10" )
+UTAssertEqual( GetFdato( "71019979849" ) ,  "1999-01-31" )
+
+
 ; short fnr
 UTAssertEqual( GetFdato( "120300" ) ,  "2000-03-12" )
 UTAssertEqual( GetFdato( "668815k" ) ,  "2015-88-66" )

@@ -155,6 +155,28 @@ EndFunc ;==>StringProper
 Func GetCentury( $fnr )
 Local $pers = StringMid( $fnr, 7,3)
 Local $yy = StringMid( $fnr, 5,2)
+
+If isDnr( $fnr ) then
+	; Nye D/serier
+	; 000-199 - 19xx
+	; 200-999 - 2000-2039
+	; 500-599 - 1858-1899
+	; 200-499 - 1940-1999
+	; 600-999 - 1940-1999
+
+	If $pers < 200 Then
+		return 19
+	ElseIf $yy < 40 Then
+		return 20
+	ElseIf $pers < 500 or $pers >= 600 Then
+		return 19
+	ElseIf $yy >= 58 Then
+		return 18
+	Else
+		Return 0
+	EndIf
+Endif
+
 	; Check Alder
 	; 000-499 - 1900
 	; 500-749 - 1854-1899
@@ -172,7 +194,6 @@ Local $yy = StringMid( $fnr, 5,2)
 	Else
 		Return 0
 	EndIf
-
 
 EndFunc
 
@@ -259,17 +280,20 @@ EndFunc
 ; ==================================
 Func GetFdato( $fnr )
 
-	Local $fdato
+	Local $fdato, $fday, $fcent
 
 		; ddmmyy00000 - fnr&dnr
 		if StringRegExp( $fnr, "^\d{11}$" ) then
 
+			$fcent = GetCentury($fnr)
+			$fday = StringLeft( $fnr, 2)
+
 			; check if dnr
 			if isDnr( $fnr ) then
-				$fnr = String(StringLeft( $fnr, 1)-4) & StringMid($fnr, 2, 10)
+				$fday = String(StringLeft( $fnr, 1)-4) & StringMid($fnr, 2, 1)
 			Endif
 
-			$fdato = StringRegExpReplace( $fnr, "^(\d\d)(\d\d)(\d\d)\d*", GetCentury($fnr) & "$3-$2-$1" )
+			$fdato = StringRegExpReplace( $fnr, "^(\d\d)(\d\d)(\d\d)\d*", GetCentury($fnr) & "$3-$2-" & $fday )
 
 		; ddmmyyyy - long fdato
 		elseif StringRegExp( $fnr, "^\d{8}\D?$" ) then

@@ -18,12 +18,12 @@
 	; 500-999 - 2000-2039
 
 
-UTAssertEqual( GetAge( "1915-03-31") , 104)
-UTAssertEqual( GetAge( "1900-11-10") , 118 )
-UTAssertEqual( GetAge( "1860-01-01") ,  159 )
-UTAssertEqual( GetAge( "1899-08-10") ,  119 )
-UTAssertEqual( GetAge( "1999-01-31") ,  20 )
-UTAssertEqual( GetAge( "1999-01-01") ,  20 )
+UTAssertEqual( GetAge( "1915-03-31") , 107)
+UTAssertEqual( GetAge( "1900-11-10") , 121 )
+UTAssertEqual( GetAge( "1860-01-01") ,  162 )
+UTAssertEqual( GetAge( "1899-08-10") ,  123 )
+UTAssertEqual( GetAge( "1999-01-31") ,  23 )
+UTAssertEqual( GetAge( "1999-01-01") ,  23 )
 UTAssertEqual( GetAge( "2005-23-89") ,  -1 )
 
 

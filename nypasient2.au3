@@ -1,3 +1,9 @@
+#Region ;**** Directives created by AutoIt3Wrapper_GUI ****
+#AutoIt3Wrapper_Icon=..\..\..\..\..\Program Files (x86)\AutoIt3\Icons\MyAutoIt3_Green.ico
+#AutoIt3Wrapper_UseX64=n
+#AutoIt3Wrapper_Res_ProductName=Anton's tool
+#AutoIt3Wrapper_Res_Field=Timestamp|%date%.%time%
+#EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 
 ; ================================
 ;
@@ -28,24 +34,27 @@
 ;	- fiexed proper in names with numbers
 ;	- remove FNR element for files with fdato
 ;	- added unit and system testing
+; 15/10/22
+;	- added paste multiline
 ; ================================
 
 ;OnAutoItExitRegister("MyExitFunc")
 #include <Date.au3>
 #include <GUIConstantsEx.au3>
 ;#include <WindowsConstants.au3>
+#include <GUIConstants.au3>
+#include <WinAPIShellEx.au3>
+;#include <GuiEdit.au3>
 
 #include "constants.au3"
 #include "nypasient2lib.au3"
 
 Opt('MustDeclareVars', 1)
 
-#AutoIt3Wrapper_Res_Field = Timestamp|%date%.%time%
-
 
 Global $ctrlFile, $ctrlName, $contextmenu, $properItem, $upperItem
 Local $msg
-
+Global	$hInput, $pInputProc
 
 GUI_Create()
 
@@ -67,6 +76,9 @@ Do
 
 Until $msg = $GUI_EVENT_CLOSE
 
+ ; Cleanup
+  _WinAPI_RemoveWindowSubclass( $hInput, $pInputProc, 9999 )
+
 GUIDelete()
 
 Exit
@@ -77,7 +89,6 @@ Exit
 ; Return: String
 ;
 ; -----------------------------------------------------------------------------
-#AutoIt3Wrapper_Res_Field = Timestamp|%date%.%time%
 
 Func GetVersion()
 
@@ -125,6 +136,11 @@ Func GUI_Create()
 	$ctrlName = GUICtrlCreateInput("navn etternavn f.nr", 60, 8, 400, 30 )
 	GUICtrlSetTip(-1, "name [middlename] surname fnr/dnr")
 	GUICtrlSetFont( $ctrlName, 14, 600 )
+
+	; Register callback function to subclass Input control (to intercept WM_PASTE)
+	$hInput = GUICtrlGetHandle( $ctrlName )
+	$pInputProc = DllCallbackGetPtr( DllCallbackRegister( "_StripClip", "lresult", "hwnd;uint;wparam;lparam;uint_ptr;dword_ptr" ) )
+	_WinAPI_SetWindowSubclass( $hInput, $pInputProc, 9999, 0 ) ; SubclassId = 9999, $pData = 0
 
 	; set focus
 	GUICtrlSetState($ctrlName, $GUI_FOCUS)
@@ -248,7 +264,7 @@ Func CreatePasientFile( $name,$surname, $fnr, $fdato, $sexid )
 		; strip FNR
 		$sString = StringRegExpReplace( $sString, "(?s)(?i)(\s+<ident>\s*<id>[^/]*?</id>[^/]*?FNR.*?</ident>)", "" )
 		$sString = StringRegExpReplace( $sString, "(?s)(?i)(\s*<id>\s*<[^>]*id>[^/]*?</[^/]*?fnr.*?</id>)", "" )
-		; Strip id med FNR uavhengig 
+		; Strip id med FNR uavhengig
 		; <*id><*><*FNR*></*id>
 		; 	<[^/>]*id>\s*(<[^>]*>[^>]*>\s*|<[^>]*?xxx[^>]*?>\s*){2}</[^>]*id>
 	else
@@ -297,4 +313,18 @@ Func CreatePasientFile( $name,$surname, $fnr, $fdato, $sexid )
 
 	MsgBox(0, "Pasient successfully created", $sString)
 
+EndFunc
+
+
+; InputProc callback function
+Func _StripClip( $hWnd, $iMsg, $wParam, $lParam, $iSubclassId, $pData )
+  Switch $iMsg
+ 	case $WM_PASTE
+		ClipPut( StringStripWS(StringReplace( ClipGet(), @CRLF, " "),7))
+		;;GUICtrlSetData( $ctrlName, StringStripWS(StringReplace( ClipGet(), @CRLF, " "),7) )
+		;ConsoleWrite( "Paste:"& GUICtrlRead( $ctrlName ) & @CRLF )
+		;return 0
+  EndSwitch
+  ; Call next function in subclass chain
+  Return DllCall( "comctl32.dll", "lresult", "DefSubclassProc", "hwnd", $hWnd, "uint", $iMsg, "wparam", $wParam, "lparam", $lParam )[0] ; _WinAPI_DefSubclassProc
 EndFunc

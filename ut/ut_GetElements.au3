@@ -43,9 +43,9 @@ UTAssertEqual( GetElements( "120869" ,$fnr, $fdato, $sexid ), 0 )
 		UTAssertEqual( $sexid, 9 )
 
 ; short fdato
-UTAssertEqual( GetElements( "120819" ,$fnr, $fdato, $sexid ), 0 )
+UTAssertEqual( GetElements( "120825" ,$fnr, $fdato, $sexid ), 0 )
 		UTAssertEqual( $fnr, 0 )
-		UTAssertEqual( $fdato, "1919-08-12" )
+		UTAssertEqual( $fdato, "1925-08-12" )
 		UTAssertEqual( $sexid, 9 )
 
 UTAssertEqual( GetElements( "120869k" ,$fnr, $fdato, $sexid ), 0 )
